@@ -1,4 +1,8 @@
 name: Crear sub-issues manualmente
+permissions:
+  contents: write
+  issues: write
+  pull-requests: write
 
 on:
   workflow_dispatch:
@@ -28,7 +32,7 @@ jobs:
           SUBTASKS: ${{ github.event.inputs.subtasks }}
         run: |
           IFS=',' read -ra TASKS <<< "$SUBTASKS"
-          echo "📦 Creando subtareas para $ENTITY (#$PARENT)..."
+          echo "Creando subtareas para $ENTITY (#$PARENT)..."
           for TASK in "${TASKS[@]}"; do
             OUTPUT=$(gh issue create \
             --repo "$REPO" \
