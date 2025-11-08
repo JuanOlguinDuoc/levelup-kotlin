@@ -30,11 +30,11 @@ jobs:
           IFS=',' read -ra TASKS <<< "$SUBTASKS"
           echo "📦 Creando subtareas para $ENTITY (#$PARENT)..."
           for TASK in "${TASKS[@]}"; do
-            ISSUE_NUMBER=$(gh issue create \
-              --repo "$REPO" \
-              --title "Crear ${TASK} para ${ENTITY}" \
-              --body "Sub-issue de #$PARENT" \
-              --label "subtask" \
-              --json number -q .number)
+            OUTPUT=$(gh issue create \
+            --repo "$REPO" \
+            --title "Crear ${TASK} para ${ENTITY}" \
+            --body "Sub-issue de #$PARENT" \
+            --label "subtask")
+          ISSUE_NUMBER=$(echo "$OUTPUT" | grep -oE '#[0-9]+' | head -1 | tr -d '#')
             gh issue comment $PARENT --body "- [ ] #$ISSUE_NUMBER Crear ${TASK} para ${ENTITY}"
           done
