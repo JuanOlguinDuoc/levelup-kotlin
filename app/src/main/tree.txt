@@ -1,0 +1,52 @@
+.
+├── AndroidManifest.xml
+├── java
+│   └── com
+│       └── example
+│           └── levelup
+│               ├── datastore
+│               │   └── DataStoreManager.kt
+│               ├── MainActivity.kt
+│               ├── model
+│               │   ├── Category.kt
+│               │   ├── Platform.kt
+│               │   ├── Product.kt
+│               │   └── User.kt
+│               ├── ui
+│               │   └── theme
+│               │       ├── appDrawer
+│               │       │   └── AppDrawer.kt
+│               │       ├── category
+│               │       │   ├── CategoryScreen.kt
+│               │       │   └── CategoryTest.kt
+│               │       ├── Color.kt
+│               │       ├── components
+│               │       │   └── InfoItem.kt
+│               │       ├── HomeScreen.kt
+│               │       ├── login
+│               │       │   └── Login.kt
+│               │       ├── mainTopBar
+│               │       │   └── MainTopBar.kt
+│               │       ├── platform
+│               │       │   └── PlatformScreen.kt
+│               │       ├── product
+│               │       │   ├── Product.kt
+│               │       │   └── ProductScreen.kt
+│               │       ├── profile
+│               │       │   └── ProfileScreen.kt
+│               │       ├── Theme.kt
+│               │       ├── Type.kt
+│               │       └── users
+│               │           └── UserScreen.kt
+│               └── viewmodel
+│                   ├── CategoryViewModel.kt
+│                   ├── PlatformViewModel.kt
+│                   ├── ProductViewModel.kt
+│                   └── UserViewModel.kt
+├── res
+│   ├── drawable
+│   │   ├── ic_launcher_background.xml
+│   │   ├── ic_launcher_foreground.xml
+│   │   ├── logo.png
+│   │   ├── profile.png
+│   │   └── user.gif

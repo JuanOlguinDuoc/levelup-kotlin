@@ -33,8 +33,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalHapticFeedback
-import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
@@ -43,7 +41,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.example.levelup.R
 import com.example.levelup.ui.theme.components.InfoItem
 import com.example.levelup.ui.theme.mainTopBar.MainTopBar
-import android.widget.Toast
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -122,17 +119,8 @@ fun ProfileScreen(
 
 
             val context = LocalContext.current
-            val haptic = LocalHapticFeedback.current
             OutlinedButton(
-                onClick = {
-                    // Intentar vibrar o notificar si no hay motor de vibración; usar HapticFeedback como fallback
-                    tryVibrateOrNotify(context)
-                    try {
-                        haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                    } catch (e: Exception) {
-                        // ignore
-                    }
-                },
+                onClick = { vibrate(context) },
                 modifier = Modifier.fillMaxWidth().height(56.dp),
                 colors = ButtonDefaults.outlinedButtonColors(
                     contentColor = androidx.compose.ui.graphics.Color.Red
@@ -170,28 +158,6 @@ private fun vibrate(context: Context) {
     } catch (e: Exception) {
         // Si hay algún error, simplemente lo ignoramos para evitar que la app se cierre
         e.printStackTrace()
-    }
-}
-
-private fun hasVibrator(context: Context): Boolean {
-    val vibrator = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-        (context.getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as? VibratorManager)?.defaultVibrator
-    } else {
-        @Suppress("DEPRECATION")
-        context.getSystemService(Context.VIBRATOR_SERVICE) as? Vibrator
-    }
-    return vibrator?.hasVibrator() ?: false
-}
-
-private fun tryVibrateOrNotify(context: Context) {
-    if (hasVibrator(context)) {
-        vibrate(context)
-    } else {
-        try {
-            android.widget.Toast.makeText(context, "Este dispositivo no tiene motor de vibración", android.widget.Toast.LENGTH_SHORT).show()
-        } catch (e: Exception) {
-            // Ignore UI errors in non-UI context
-        }
     }
 }
 

@@ -157,6 +157,38 @@ fun AgregarProductoDialog(
     var price by remember { mutableStateOf("") }
     var stock by remember { mutableStateOf("") }
 
+    var nameError by remember { mutableStateOf<String?>(null) }
+    var priceError by remember { mutableStateOf<String?>(null) }
+    var stockError by remember { mutableStateOf<String?>(null) }
+
+    fun validate(): Boolean {
+        var ok = true
+        if (!com.example.levelup.utils.ValidationUtils.isNonEmpty(name)) {
+            nameError = "Nombre requerido"
+            ok = false
+        } else {
+            nameError = null
+        }
+
+        val priceInt = com.example.levelup.utils.ValidationUtils.parsePositiveInt(price)
+        if (priceInt == null) {
+            priceError = "Precio inválido (>= 0)"
+            ok = false
+        } else {
+            priceError = null
+        }
+
+        val stockInt = com.example.levelup.utils.ValidationUtils.parsePositiveInt(stock)
+        if (stockInt == null) {
+            stockError = "Stock inválido (>= 0)"
+            ok = false
+        } else {
+            stockError = null
+        }
+
+        return ok
+    }
+
     AlertDialog(
         onDismissRequest = onDismiss,
         title = { Text("Nuevo Producto") },
@@ -166,34 +198,45 @@ fun AgregarProductoDialog(
                     value = name,
                     onValueChange = { name = it },
                     label = { Text("Nombre") },
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
+                    isError = nameError != null
                 )
+                if (nameError != null) Text(nameError!!, color = MaterialTheme.colorScheme.error)
+
                 OutlinedTextField(
                     value = description,
                     onValueChange = { description = it },
                     label = { Text("Descripción") },
                     modifier = Modifier.fillMaxWidth()
                 )
+
                 OutlinedTextField(
                     value = price,
                     onValueChange = { price = it },
                     label = { Text("Precio") },
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
+                    isError = priceError != null
                 )
+                if (priceError != null) Text(priceError!!, color = MaterialTheme.colorScheme.error)
+
                 OutlinedTextField(
                     value = stock,
                     onValueChange = { stock = it },
                     label = { Text("Stock") },
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
+                    isError = stockError != null
                 )
+                if (stockError != null) Text(stockError!!, color = MaterialTheme.colorScheme.error)
             }
         },
         confirmButton = {
             TextButton(
                 onClick = {
-                    val priceInt = price.toIntOrNull() ?: 0
-                    val stockInt = stock.toIntOrNull() ?: 0
-                    onConfirm(name, description, priceInt, stockInt)
+                    if (validate()) {
+                        val priceInt = com.example.levelup.utils.ValidationUtils.parsePositiveInt(price) ?: 0
+                        val stockInt = com.example.levelup.utils.ValidationUtils.parsePositiveInt(stock) ?: 0
+                        onConfirm(name, description, priceInt, stockInt)
+                    }
                 }
             ) {
                 Text("Agregar")
@@ -218,6 +261,38 @@ fun EditarProductoDialog(
     var price by remember { mutableStateOf(producto.price.toString()) }
     var stock by remember { mutableStateOf(producto.stock.toString()) }
 
+    var nameError by remember { mutableStateOf<String?>(null) }
+    var priceError by remember { mutableStateOf<String?>(null) }
+    var stockError by remember { mutableStateOf<String?>(null) }
+
+    fun validate(): Boolean {
+        var ok = true
+        if (!com.example.levelup.utils.ValidationUtils.isNonEmpty(name)) {
+            nameError = "Nombre requerido"
+            ok = false
+        } else {
+            nameError = null
+        }
+
+        val priceInt = com.example.levelup.utils.ValidationUtils.parsePositiveInt(price)
+        if (priceInt == null) {
+            priceError = "Precio inválido (>= 0)"
+            ok = false
+        } else {
+            priceError = null
+        }
+
+        val stockInt = com.example.levelup.utils.ValidationUtils.parsePositiveInt(stock)
+        if (stockInt == null) {
+            stockError = "Stock inválido (>= 0)"
+            ok = false
+        } else {
+            stockError = null
+        }
+
+        return ok
+    }
+
     AlertDialog(
         onDismissRequest = onDismiss,
         title = { Text("Editar Producto") },
@@ -227,34 +302,45 @@ fun EditarProductoDialog(
                     value = name,
                     onValueChange = { name = it },
                     label = { Text("Nombre") },
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
+                    isError = nameError != null
                 )
+                if (nameError != null) Text(nameError!!, color = MaterialTheme.colorScheme.error)
+
                 OutlinedTextField(
                     value = description,
                     onValueChange = { description = it },
                     label = { Text("Descripción") },
                     modifier = Modifier.fillMaxWidth()
                 )
+
                 OutlinedTextField(
                     value = price,
                     onValueChange = { price = it },
                     label = { Text("Precio") },
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
+                    isError = priceError != null
                 )
+                if (priceError != null) Text(priceError!!, color = MaterialTheme.colorScheme.error)
+
                 OutlinedTextField(
                     value = stock,
                     onValueChange = { stock = it },
                     label = { Text("Stock") },
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
+                    isError = stockError != null
                 )
+                if (stockError != null) Text(stockError!!, color = MaterialTheme.colorScheme.error)
             }
         },
         confirmButton = {
             TextButton(
                 onClick = {
-                    val priceInt = price.toIntOrNull() ?: 0
-                    val stockInt = stock.toIntOrNull() ?: 0
-                    onConfirm(name, description, priceInt, stockInt)
+                    if (validate()) {
+                        val priceInt = com.example.levelup.utils.ValidationUtils.parsePositiveInt(price) ?: 0
+                        val stockInt = com.example.levelup.utils.ValidationUtils.parsePositiveInt(stock) ?: 0
+                        onConfirm(name, description, priceInt, stockInt)
+                    }
                 }
             ) {
                 Text("Guardar")
