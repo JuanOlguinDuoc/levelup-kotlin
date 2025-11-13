@@ -1,4 +1,4 @@
-package com.example.levelup_kotlin
+package com.example.levelup
 
 import org.junit.Test
 
