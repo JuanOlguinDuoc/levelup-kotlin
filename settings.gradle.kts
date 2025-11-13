@@ -19,6 +19,6 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "levelup-kotlin"
+rootProject.name = "Level Up"
 include(":app")
  
