@@ -2,12 +2,7 @@ name: Ejecución de Tests Android (Kotlin)
 
 # Define los eventos que dispararán este workflow
 on:
-  push:
-    # Se ejecuta en cualquier rama
-    branches: [ '*' ]
-  pull_request:
-    # Se ejecuta para cualquier Pull Request
-    branches: [ '*' ]
+  workflow_dispatch:
 
 jobs:
   test:
