@@ -47,14 +47,14 @@ class ProductViewModel(
         }
     }
 
-    fun eliminarProducto(id: Int) {
+    fun eliminarProducto(id: Long) {
         viewModelScope.launch {
             val productosActuales = productos.value.filterNot { it.id == id }
             dataStoreManager.saveProducts(productosActuales)
         }
     }
 
-    fun editarProducto(id: Int, newName: String, newDescription: String, newPrice: Int, newStock: Int) {
+    fun editarProducto(id: Long, newName: String, newDescription: String, newPrice: Int, newStock: Int) {
         viewModelScope.launch {
             val productosActuales = productos.value.toMutableList()
             val index = productosActuales.indexOfFirst { it.id == id }

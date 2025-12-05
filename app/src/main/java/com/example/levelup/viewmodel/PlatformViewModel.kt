@@ -48,14 +48,14 @@ class PlatformViewModel(
         }
     }
 
-    fun eliminarPlataforma(id: Int){
+    fun eliminarPlataforma(id: Long){
         viewModelScope.launch {
             val plataformasActuales = plataformas.value.filterNot { it.id == id }
             dataStoreManager.savePlatform(plataformasActuales)
         }
     }
 
-    fun editarPlataforma (id: Int, newName: String){
+    fun editarPlataforma (id: Long, newName: String){
         viewModelScope.launch {
             val plataformasActuales = plataformas.value.toMutableList()
             val index = plataformasActuales.indexOfFirst { it.id == id }

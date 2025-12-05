@@ -30,7 +30,7 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AppDrawer() {
+fun AppDrawerWithAuth() {
     val context = LocalContext.current
     val authViewModel = remember { AuthViewModel(context) }
     val isLoggedIn by authViewModel.isLoggedIn.collectAsState()
@@ -62,11 +62,24 @@ private fun AuthenticatedDrawer(
         drawerContent = {
             ModalDrawerSheet {
                 Spacer(Modifier.height(16.dp))
-                Text(
-                    "Menú Principal",
-                    style = MaterialTheme.typography.titleMedium,
-                    modifier = Modifier.padding(16.dp)
-                )
+                
+                // User info
+                userEmail?.let { email ->
+                    Column(modifier = Modifier.padding(16.dp)) {
+                        Text(
+                            "Bienvenido",
+                            style = MaterialTheme.typography.titleMedium
+                        )
+                        Text(
+                            email,
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                }
+                
+                Divider()
+                Spacer(Modifier.height(8.dp))
 
                 NavigationDrawerItem(
                     label = { Text("Dashboard") },
@@ -77,8 +90,8 @@ private fun AuthenticatedDrawer(
 
                 NavigationDrawerItem(
                     label = { Text("Ordenes") },
-                    selected = selectedScreen == "profile",
-                    onClick = { selectedScreen = "profile" },
+                    selected = selectedScreen == "orders",
+                    onClick = { selectedScreen = "orders" },
                     icon = { Icon(Icons.Filled.ShoppingBag, contentDescription = null) }
                 )
 
@@ -119,124 +132,66 @@ private fun AuthenticatedDrawer(
 
                 NavigationDrawerItem(
                     label = { Text("Perfil") },
-                    selected = selectedScreen == "userProfile",
-                    onClick = { selectedScreen = "userProfile" },
+                    selected = selectedScreen == "profile",
+                    onClick = { selectedScreen = "profile" },
                     icon = { Icon(Icons.Filled.AccountCircle, contentDescription = null) }
                 )
-
-                Spacer(modifier = Modifier.height(16.dp))
+                
+                Spacer(modifier = Modifier.weight(1f))
+                
                 Divider()
-                Spacer(modifier = Modifier.height(16.dp))
-
-                // User info and logout
-                userEmail?.let { email ->
-                    Text(
-                        text = "Conectado como:",
-                        style = MaterialTheme.typography.bodySmall,
-                        modifier = Modifier.padding(horizontal = 16.dp)
-                    )
-                    Text(
-                        text = email,
-                        style = MaterialTheme.typography.bodyMedium,
-                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)
-                    )
-                    Spacer(modifier = Modifier.height(8.dp))
-                }
-
+                
+                // Logout button
                 NavigationDrawerItem(
                     label = { Text("Cerrar Sesión") },
                     selected = false,
-                    onClick = { authViewModel.logout() },
-                    icon = { Icon(Icons.Filled.Logout, contentDescription = null) }
+                    onClick = { 
+                        authViewModel.logout()
+                        scope.launch { drawerState.close() }
+                    },
+                    icon = { Icon(Icons.Filled.Logout, contentDescription = null) },
+                    colors = NavigationDrawerItemDefaults.colors(
+                        unselectedTextColor = MaterialTheme.colorScheme.error,
+                        unselectedIconColor = MaterialTheme.colorScheme.error
+                    )
                 )
+                
+                Spacer(Modifier.height(16.dp))
             }
         }
     ) {
         // Contenido central según la pantalla seleccionada
         when (selectedScreen) {
             "home" -> HomeScreen(onMenuClick = { scope.launch { drawerState.open() } })
-            "profile" -> ProfileScreen(onMenuClick = { scope.launch { drawerState.open() } })
-            "userProfile" -> ProfileScreen(onMenuClick = { scope.launch { drawerState.open() } })
-            "settings" -> SettingsScreenAuth(
-                authViewModel = authViewModel,
-                userEmail = userEmail,
-                onMenuClick = { scope.launch { drawerState.open() } }
-            )
+            "orders" -> ProfileScreen(onMenuClick = { scope.launch { drawerState.open() } })
+            "settings" -> SettingsScreen(onMenuClick = { scope.launch { drawerState.open() } })
             "category" -> CategoryScreen(onMenuClick = { scope.launch { drawerState.open() } })
             "users" -> UserScreen(onMenuClick = {scope.launch { drawerState.open() }})
             "platform" -> PlatformScreen( onMenuClick = {scope.launch { drawerState.open() }})
             "products" -> ProductScreen(onMenuClick = {scope.launch { drawerState.open() }})
+            "profile" -> ProfileScreen(onMenuClick = { scope.launch { drawerState.open() } })
         }
     }
 }
 
-// Pantalla de Reportes/Configuración
+// Ejemplo de pantalla Configuración
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SettingsScreenAuth(
-    authViewModel: AuthViewModel,
-    userEmail: String?,
+fun SettingsScreen(
     onMenuClick: () -> Unit
 ) {
     Scaffold(
         topBar = {
-            MainTopBar("Reportes", onMenuClick)
+            MainTopBar("Configuracion", onMenuClick)
         }
     ) { innerPadding ->
         Column(
-            modifier = Modifier
+            Modifier
                 .fillMaxSize()
-                .padding(innerPadding)
-                .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+                .padding(innerPadding),
+            verticalArrangement = Arrangement.Center
         ) {
-            Card(
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Column(
-                    modifier = Modifier.padding(16.dp)
-                ) {
-                    Text(
-                        text = "Información de Usuario",
-                        style = MaterialTheme.typography.titleMedium
-                    )
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Text(
-                        text = "Email: ${userEmail ?: "No disponible"}",
-                        style = MaterialTheme.typography.bodyMedium
-                    )
-                }
-            }
-            
-            Card(
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Column(
-                    modifier = Modifier.padding(16.dp)
-                ) {
-                    Text(
-                        text = "Configuración del Backend",
-                        style = MaterialTheme.typography.titleMedium
-                    )
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Text(
-                        text = "URL: http://levelup-back-env.eba-277ppcgy.us-east-1.elasticbeanstalk.com/",
-                        style = MaterialTheme.typography.bodySmall
-                    )
-                }
-            }
-            
-            Button(
-                onClick = { authViewModel.logout() },
-                modifier = Modifier.fillMaxWidth(),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.error
-                )
-            ) {
-                Icon(Icons.Filled.Logout, contentDescription = null)
-                Spacer(modifier = Modifier.width(8.dp))
-                Text("Cerrar Sesión")
-            }
+            Text("Pantalla de configuración", modifier = Modifier.padding(16.dp))
         }
     }
 }

@@ -49,14 +49,14 @@ class CategoryViewModel(
         }
     }
 
-    fun eliminarCategoria(id: Int) {
+    fun eliminarCategoria(id: Long) {
         viewModelScope.launch {
             val categoriasActuales = categories.value.filterNot { it.id == id }
             dataStoreManager.saveCategories(categoriasActuales)
         }
     }
 
-    fun editarCategoria(id: Int, newName: String, newDescription: String, newIcon: String) {
+    fun editarCategoria(id: Long, newName: String, newDescription: String, newIcon: String) {
         viewModelScope.launch {
             val categoriasActuales = categories.value.toMutableList()
             val index = categoriasActuales.indexOfFirst { it.id == id }

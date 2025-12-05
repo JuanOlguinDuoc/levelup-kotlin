@@ -48,14 +48,14 @@ class UserViewModel(
         }
     }
 
-    fun eliminarUsuario(id: Int){
+    fun eliminarUsuario(id: Long){
         viewModelScope.launch {
             val usuariosActuales = usuarios.value.filterNot { it.id == id }
             dataStorageManager.saveUsers(usuariosActuales)
         }
     }
 
-    fun editarUsuario(id: Int, newRun: String, newDireccion: String, newName: String, newApellido: String, newCorreo: String, newPassword: String){
+    fun editarUsuario(id: Long, newRun: String, newDireccion: String, newName: String, newApellido: String, newCorreo: String, newPassword: String){
         viewModelScope.launch {
             val usuariosActuales = usuarios.value.toMutableList()
             val index = usuariosActuales.indexOfFirst { it.id == id }
@@ -63,9 +63,9 @@ class UserViewModel(
                 val usuarioEditado = usuariosActuales[index].copy(
                     run = newRun,
                     direccion = newDireccion,
-                    nombres = newName,
-                    apellidos = newApellido,
-                    correo = newCorreo,
+                    firstName = newName,  // Cambio: nombres -> firstName
+                    lastName = newApellido,  // Cambio: apellidos -> lastName
+                    email = newCorreo,  // Cambio: correo -> email
                     password = newPassword
                 )
                 usuariosActuales[index] = usuarioEditado
