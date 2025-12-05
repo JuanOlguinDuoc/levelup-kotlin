@@ -1,0 +1,56 @@
+name: Ejecución de Tests Android (Kotlin)
+
+# Define los eventos que dispararán este workflow
+on:
+  push:
+    # Se ejecuta en cualquier rama
+    branches: [ '*' ]
+  pull_request:
+    # Se ejecuta para cualquier Pull Request
+    branches: [ '*' ]
+
+jobs:
+  test:
+    name: Ejecutar Tests Unitarios
+    # Utiliza un entorno Linux reciente para el runner de GitHub Actions
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout del Código
+      # Obtiene el código del repositorio
+      uses: actions/checkout@v4
+
+    - name: Configurar Java JDK (Versión 17)
+      # Configura el entorno Java necesario para Android/Kotlin
+      uses: actions/setup-java@v4
+      with:
+        distribution: 'temurin'
+        java-version: '17'
+
+    - name: Dar Permiso de Ejecución a Gradle Wrapper
+      # El archivo gradlew necesita permisos de ejecución en Linux
+      run: chmod +x ./gradlew
+
+    - name: Ejecutar Tests Unitarios de Gradle
+      # Ejecuta la tarea 'test' de Gradle. Esto suele incluir solo los tests unitarios.
+      # Si tienes varios módulos, puedes necesitar adaptarlo (ej: ./gradlew :app:testDebugUnitTest)
+      run: ./gradlew test --stacktrace
+
+    - name: Subir Reporte de Tests (HTML)
+      # Sube el reporte HTML generado por Gradle como un artefacto
+      # El artefacto se puede descargar desde la página de la ejecución del workflow
+      uses: actions/upload-artifact@v4
+      with:
+        name: Reporte-Tests-Unitarios-Android
+        path: |
+          app/build/reports/tests/testDebugUnitTest/
+        # Días de retención del artefacto (opcional)
+        retention-days: 5
+
+    - name: Subir Archivos XML de Resultados de Tests
+      # Sube los resultados raw en formato XML (útil si necesitas herramientas externas de CI)
+      uses: actions/upload-artifact@v4
+      with:
+        name: Resultados-JUnit-XML
+        path: app/build/test-results/
+        retention-days: 5
