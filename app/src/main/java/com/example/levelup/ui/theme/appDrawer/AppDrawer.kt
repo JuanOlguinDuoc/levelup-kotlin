@@ -25,6 +25,7 @@ import com.example.levelup.ui.theme.mainTopBar.MainTopBar
 import com.example.levelup.ui.theme.platform.PlatformScreen
 import com.example.levelup.ui.theme.product.ProductScreen
 import com.example.levelup.ui.theme.auth.LoginScreen
+import com.example.levelup.ui.theme.carrito.CarritoScreen
 import com.example.levelup.viewmodel.AuthViewModel
 import kotlinx.coroutines.launch
 
@@ -76,9 +77,9 @@ private fun AuthenticatedDrawer(
                 )
 
                 NavigationDrawerItem(
-                    label = { Text("Ordenes") },
-                    selected = selectedScreen == "profile",
-                    onClick = { selectedScreen = "profile" },
+                    label = { Text("Ventas") },
+                    selected = selectedScreen == "carts",
+                    onClick = { selectedScreen = "carts" },
                     icon = { Icon(Icons.Filled.ShoppingBag, contentDescription = null) }
                 )
 
@@ -156,6 +157,7 @@ private fun AuthenticatedDrawer(
         when (selectedScreen) {
             "home" -> HomeScreen(onMenuClick = { scope.launch { drawerState.open() } })
             "profile" -> ProfileScreen(onMenuClick = { scope.launch { drawerState.open() } })
+            "carts" -> CarritoScreen (onMenuClick = {scope.launch { drawerState.open() }})
             "userProfile" -> ProfileScreen(onMenuClick = { scope.launch { drawerState.open() } })
             "settings" -> SettingsScreenAuth(
                 authViewModel = authViewModel,

@@ -339,4 +339,30 @@ class LevelUpRepository(context: Context) {
         
         return result
     }
+
+    // Carts methods (fakestoreapi.com)
+    suspend fun getAllCarts(): ApiResult<List<com.example.levelup.model.Carrito>> {
+        val result = apiCall { apiService.getAllCarts() }
+        return result
+    }
+
+    suspend fun getCartById(id: Long): ApiResult<com.example.levelup.model.Carrito> {
+        val result = apiCall { apiService.getCartById(id) }
+        return result
+    }
+
+    suspend fun createCart(cart: com.example.levelup.model.Carrito): ApiResult<com.example.levelup.model.Carrito> {
+        val result = apiCall { apiService.createCart(cart) }
+        return result
+    }
+
+    suspend fun updateCart(id: Long, cart: com.example.levelup.model.Carrito): ApiResult<com.example.levelup.model.Carrito> {
+        val result = apiCall { apiService.updateCart(id, cart) }
+        return result
+    }
+
+    suspend fun deleteCart(id: Long): ApiResult<Unit> {
+        val result = apiCall { apiService.deleteCart(id) }
+        return result
+    }
 }

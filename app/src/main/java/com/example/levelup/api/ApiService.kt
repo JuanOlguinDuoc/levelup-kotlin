@@ -104,4 +104,20 @@ interface ApiService {
         @Header("Authorization") token: String,
         @Path("id") id: Long
     ): Response<Unit>
+
+    // --- Carts (fakestoreapi.com) ---
+    @GET("https://fakestoreapi.com/carts")
+    suspend fun getAllCarts(): Response<List<com.example.levelup.model.Carrito>>
+
+    @GET("https://fakestoreapi.com/carts/{id}")
+    suspend fun getCartById(@Path("id") id: Long): Response<com.example.levelup.model.Carrito>
+
+    @POST("https://fakestoreapi.com/carts")
+    suspend fun createCart(@Body cart: com.example.levelup.model.Carrito): Response<com.example.levelup.model.Carrito>
+
+    @PUT("https://fakestoreapi.com/carts/{id}")
+    suspend fun updateCart(@Path("id") id: Long, @Body cart: com.example.levelup.model.Carrito): Response<com.example.levelup.model.Carrito>
+
+    @DELETE("https://fakestoreapi.com/carts/{id}")
+    suspend fun deleteCart(@Path("id") id: Long): Response<Unit>
 }
