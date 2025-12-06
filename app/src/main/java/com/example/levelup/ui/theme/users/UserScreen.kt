@@ -1,5 +1,7 @@
 package com.example.levelup.ui.theme.users
 
+import androidx.compose.ui.graphics.SolidColor
+import com.example.levelup.ui.theme.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -16,8 +18,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.compose.foundation.border
+import androidx.compose.material3.MenuAnchorType
+import androidx.compose.foundation.BorderStroke
 import com.example.levelup.model.UserModel
 import com.example.levelup.ui.theme.DarkGreen
+import com.example.levelup.ui.theme.*
 import com.example.levelup.ui.theme.mainTopBar.MainTopBar
 import com.example.levelup.viewmodel.UserViewModelWithApi
 
@@ -76,19 +82,14 @@ fun UserScreen(modifier: Modifier = Modifier, onMenuClick: () -> Unit = {}) {
                 }
             }
 
-            OutlinedButton(
-                    onClick = { showDialog = true },
-                    modifier = Modifier.fillMaxWidth(),
-                    enabled = !isLoading,
-                    colors = ButtonDefaults.outlinedButtonColors(contentColor = DarkGreen),
-                    border =
-                            ButtonDefaults.outlinedButtonBorder.copy(
-                                    brush =
-                                            androidx.compose.ui.graphics.SolidColor(
-                                                    androidx.compose.ui.graphics.Color.Green
-                                            )
-                            )
-            ) {
+                        OutlinedButton(
+                                        onClick = { showDialog = true },
+                                        modifier = Modifier
+                                                .fillMaxWidth()
+                                                .border(BorderStroke(1.dp, SolidColor(Green80)), shape = MaterialTheme.shapes.small),
+                                        enabled = !isLoading,
+                                        colors = ButtonDefaults.outlinedButtonColors(contentColor = Pink80)
+                        ) {
                 if (isLoading) {
                     CircularProgressIndicator(modifier = Modifier.size(16.dp), color = DarkGreen)
                     Spacer(modifier = Modifier.width(8.dp))
@@ -197,173 +198,171 @@ fun UserScreen(modifier: Modifier = Modifier, onMenuClick: () -> Unit = {}) {
                     }
             )
         }
-        }
     }
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddUserDialog(
-    onDismiss: () -> Unit,
-    onConfirm: (UserModel) -> Unit
-) {
+fun AddUserDialog(onDismiss: () -> Unit, onConfirm: (UserModel) -> Unit) {
     var run by remember { mutableStateOf("") }
-    var firstName by remember { mutableStateOf("") }    // Cambiar nombres
-    var lastName by remember { mutableStateOf("") }     // Cambiar apellidos  
+    var firstName by remember { mutableStateOf("") } // Cambiar nombres
+    var lastName by remember { mutableStateOf("") } // Cambiar apellidos
     var direccion by remember { mutableStateOf("") }
-    var email by remember { mutableStateOf("") }        // Cambiar correo
+    var email by remember { mutableStateOf("") } // Cambiar correo
     var password by remember { mutableStateOf("") }
-    var role by remember { mutableStateOf("usuario") }  // Valor por defecto correcto
+    var role by remember { mutableStateOf("usuario") } // Valor por defecto correcto
     var expanded by remember { mutableStateOf(false) }
 
     val roles = listOf("usuario", "administrador", "cliente")
-    
+
     // Validaciones
-    val isFormValid = run.isNotBlank() && firstName.isNotBlank() && 
-                     lastName.isNotBlank() && email.isNotBlank() && 
-                     password.isNotBlank() && role.isNotBlank()
+    val isFormValid =
+            run.isNotBlank() &&
+                    firstName.isNotBlank() &&
+                    lastName.isNotBlank() &&
+                    email.isNotBlank() &&
+                    password.isNotBlank() &&
+                    role.isNotBlank()
 
     AlertDialog(
-        onDismissRequest = onDismiss,
-        title = { Text("Agregar Usuario") },
-        text = {
-            Column {
-                // RUN
-                OutlinedTextField(
-                    value = run,
-                    onValueChange = { run = it },
-                    label = { Text("RUN") },
-                    singleLine = true,
-                    modifier = Modifier.fillMaxWidth()
-                )
-                
-                Spacer(modifier = Modifier.height(8.dp))
-                
-                // First Name
-                OutlinedTextField(
-                    value = firstName,
-                    onValueChange = { firstName = it },
-                    label = { Text("Nombres") },
-                    singleLine = true,
-                    modifier = Modifier.fillMaxWidth()
-                )
-                
-                Spacer(modifier = Modifier.height(8.dp))
-                
-                // Last Name  
-                OutlinedTextField(
-                    value = lastName,
-                    onValueChange = { lastName = it },
-                    label = { Text("Apellidos") },
-                    singleLine = true,
-                    modifier = Modifier.fillMaxWidth()
-                )
-                
-                Spacer(modifier = Modifier.height(8.dp))
-                
-                // Direccion (solo para uso local)
-                OutlinedTextField(
-                    value = direccion,
-                    onValueChange = { direccion = it },
-                    label = { Text("Dirección") },
-                    singleLine = true,
-                    modifier = Modifier.fillMaxWidth()
-                )
-                
-                Spacer(modifier = Modifier.height(8.dp))
-                
-                // Email
-                OutlinedTextField(
-                    value = email,
-                    onValueChange = { email = it },
-                    label = { Text("Email") },
-                    singleLine = true,
-                    modifier = Modifier.fillMaxWidth()
-                )
-                
-                Spacer(modifier = Modifier.height(8.dp))
-                
-                // Password
-                OutlinedTextField(
-                    value = password,
-                    onValueChange = { password = it },
-                    label = { Text("Contraseña") },
-                    singleLine = true,
-                    modifier = Modifier.fillMaxWidth()
-                )
-                
-                Spacer(modifier = Modifier.height(8.dp))
-                
-                // Role Dropdown
-                ExposedDropdownMenuBox(
-                    expanded = expanded,
-                    onExpandedChange = { expanded = !expanded }
-                ) {
+            onDismissRequest = onDismiss,
+            title = { Text("Agregar Usuario") },
+            text = {
+                Column {
+                    // RUN
                     OutlinedTextField(
-                        value = role,
-                        onValueChange = {},
-                        readOnly = true,
-                        label = { Text("Rol") },
-                        trailingIcon = {
-                            ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
-                        },
-                        colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors(),
-                        modifier = Modifier
-                            .menuAnchor()
-                            .fillMaxWidth()
+                            value = run,
+                            onValueChange = { run = it },
+                            label = { Text("RUN") },
+                            singleLine = true,
+                            modifier = Modifier.fillMaxWidth()
                     )
-                    
-                    ExposedDropdownMenu(
-                        expanded = expanded,
-                        onDismissRequest = { expanded = false }
+
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    // First Name
+                    OutlinedTextField(
+                            value = firstName,
+                            onValueChange = { firstName = it },
+                            label = { Text("Nombres") },
+                            singleLine = true,
+                            modifier = Modifier.fillMaxWidth()
+                    )
+
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    // Last Name
+                    OutlinedTextField(
+                            value = lastName,
+                            onValueChange = { lastName = it },
+                            label = { Text("Apellidos") },
+                            singleLine = true,
+                            modifier = Modifier.fillMaxWidth()
+                    )
+
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    // Direccion (solo para uso local)
+                    OutlinedTextField(
+                            value = direccion,
+                            onValueChange = { direccion = it },
+                            label = { Text("Dirección") },
+                            singleLine = true,
+                            modifier = Modifier.fillMaxWidth()
+                    )
+
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    // Email
+                    OutlinedTextField(
+                            value = email,
+                            onValueChange = { email = it },
+                            label = { Text("Email") },
+                            singleLine = true,
+                            modifier = Modifier.fillMaxWidth()
+                    )
+
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    // Password
+                    OutlinedTextField(
+                            value = password,
+                            onValueChange = { password = it },
+                            label = { Text("Contraseña") },
+                            singleLine = true,
+                            modifier = Modifier.fillMaxWidth()
+                    )
+
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    // Role Dropdown
+                    ExposedDropdownMenuBox(
+                            expanded = expanded,
+                            onExpandedChange = { expanded = !expanded }
                     ) {
-                        roles.forEach { selectedRole ->
-                            DropdownMenuItem(
-                                onClick = {
-                                    role = selectedRole
-                                    expanded = false
-                                },
-                                text = { Text(selectedRole.replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() }) }
-                            )
+                                                OutlinedTextField(
+                                                                value = role,
+                                                                onValueChange = {},
+                                                                readOnly = true,
+                                                                label = { Text("Rol") },
+                                                                trailingIcon = {
+                                                                        ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
+                                                                },
+                                                                colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors(),
+                                                                modifier = Modifier.fillMaxWidth()
+                                                )
+
+                        ExposedDropdownMenu(
+                                expanded = expanded,
+                                onDismissRequest = { expanded = false }
+                        ) {
+                            roles.forEach { selectedRole ->
+                                DropdownMenuItem(
+                                        onClick = {
+                                            role = selectedRole
+                                            expanded = false
+                                        },
+                                        text = {
+                                            Text(
+                                                    selectedRole.replaceFirstChar {
+                                                        if (it.isLowerCase()) it.titlecase()
+                                                        else it.toString()
+                                                    }
+                                            )
+                                        }
+                                )
+                            }
                         }
                     }
                 }
-            }
-        },
-        confirmButton = {
-            TextButton(
-                onClick = {
-                    val newUser = UserModel(
-                        id = 0,
-                        run = run,
-                        firstName = firstName,
-                        lastName = lastName,
-                        email = email,
-                        password = password,
-                        role = role,
-                        direccion = direccion
-                    )
-                    onConfirm(newUser)
-                    onDismiss()
-                },
-                enabled = isFormValid
-            ) {
-                Text("Confirmar")
-            }
-        },
-        dismissButton = {
-            TextButton(onClick = onDismiss) {
-                Text("Cancelar")
-            }
-        }
+            },
+            confirmButton = {
+                TextButton(
+                        onClick = {
+                            val newUser =
+                                    UserModel(
+                                            id = 0,
+                                            run = run,
+                                            firstName = firstName,
+                                            lastName = lastName,
+                                            email = email,
+                                            password = password,
+                                            role = role,
+                                            direccion = direccion
+                                    )
+                            onConfirm(newUser)
+                            onDismiss()
+                        },
+                        enabled = isFormValid
+                ) { Text("Confirmar") }
+            },
+            dismissButton = { TextButton(onClick = onDismiss) { Text("Cancelar") } }
     )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun editarUserDialog(
-    user: UserModel,
-    onDismiss: () -> Unit,
-    onConfirm: (UserModel) -> Unit
-) {
+fun editarUserDialog(user: UserModel, onDismiss: () -> Unit, onConfirm: (UserModel) -> Unit) {
     var run by remember { mutableStateOf(user.run) }
     var firstName by remember { mutableStateOf(user.firstName) }
     var lastName by remember { mutableStateOf(user.lastName) }
@@ -374,142 +373,146 @@ fun editarUserDialog(
     var expanded by remember { mutableStateOf(false) }
 
     val roles = listOf("usuario", "administrador", "cliente")
-    
+
     // Validaciones
-    val isFormValid = run.isNotBlank() && firstName.isNotBlank() && 
-                     lastName.isNotBlank() && email.isNotBlank() && 
-                     password.isNotBlank() && role.isNotBlank()
+    val isFormValid =
+            run.isNotBlank() &&
+                    firstName.isNotBlank() &&
+                    lastName.isNotBlank() &&
+                    email.isNotBlank() &&
+                    password.isNotBlank() &&
+                    role.isNotBlank()
 
     AlertDialog(
-        onDismissRequest = onDismiss,
-        title = { Text("Editar Usuario") },
-        text = {
-            Column {
-                // RUN
-                OutlinedTextField(
-                    value = run,
-                    onValueChange = { run = it },
-                    label = { Text("RUN") },
-                    singleLine = true,
-                    modifier = Modifier.fillMaxWidth()
-                )
-                
-                Spacer(modifier = Modifier.height(8.dp))
-                
-                // First Name
-                OutlinedTextField(
-                    value = firstName,
-                    onValueChange = { firstName = it },
-                    label = { Text("Nombres") },
-                    singleLine = true,
-                    modifier = Modifier.fillMaxWidth()
-                )
-                
-                Spacer(modifier = Modifier.height(8.dp))
-                
-                // Last Name  
-                OutlinedTextField(
-                    value = lastName,
-                    onValueChange = { lastName = it },
-                    label = { Text("Apellidos") },
-                    singleLine = true,
-                    modifier = Modifier.fillMaxWidth()
-                )
-                
-                Spacer(modifier = Modifier.height(8.dp))
-                
-                // Direccion (solo para uso local)
-                OutlinedTextField(
-                    value = direccion,
-                    onValueChange = { direccion = it },
-                    label = { Text("Dirección") },
-                    singleLine = true,
-                    modifier = Modifier.fillMaxWidth()
-                )
-                
-                Spacer(modifier = Modifier.height(8.dp))
-                
-                // Email
-                OutlinedTextField(
-                    value = email,
-                    onValueChange = { email = it },
-                    label = { Text("Email") },
-                    singleLine = true,
-                    modifier = Modifier.fillMaxWidth()
-                )
-                
-                Spacer(modifier = Modifier.height(8.dp))
-                
-                // Password
-                OutlinedTextField(
-                    value = password,
-                    onValueChange = { password = it },
-                    label = { Text("Contraseña") },
-                    singleLine = true,
-                    modifier = Modifier.fillMaxWidth()
-                )
-                
-                Spacer(modifier = Modifier.height(8.dp))
-                
-                // Role Dropdown
-                ExposedDropdownMenuBox(
-                    expanded = expanded,
-                    onExpandedChange = { expanded = !expanded }
-                ) {
+            onDismissRequest = onDismiss,
+            title = { Text("Editar Usuario") },
+            text = {
+                Column {
+                    // RUN
                     OutlinedTextField(
-                        value = role,
-                        onValueChange = {},
-                        readOnly = true,
-                        label = { Text("Rol") },
-                        trailingIcon = {
-                            ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
-                        },
-                        colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors(),
-                        modifier = Modifier
-                            .menuAnchor()
-                            .fillMaxWidth()
+                            value = run,
+                            onValueChange = { run = it },
+                            label = { Text("RUN") },
+                            singleLine = true,
+                            modifier = Modifier.fillMaxWidth()
                     )
-                    
-                    ExposedDropdownMenu(
-                        expanded = expanded,
-                        onDismissRequest = { expanded = false }
+
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    // First Name
+                    OutlinedTextField(
+                            value = firstName,
+                            onValueChange = { firstName = it },
+                            label = { Text("Nombres") },
+                            singleLine = true,
+                            modifier = Modifier.fillMaxWidth()
+                    )
+
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    // Last Name
+                    OutlinedTextField(
+                            value = lastName,
+                            onValueChange = { lastName = it },
+                            label = { Text("Apellidos") },
+                            singleLine = true,
+                            modifier = Modifier.fillMaxWidth()
+                    )
+
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    // Direccion (solo para uso local)
+                    OutlinedTextField(
+                            value = direccion,
+                            onValueChange = { direccion = it },
+                            label = { Text("Dirección") },
+                            singleLine = true,
+                            modifier = Modifier.fillMaxWidth()
+                    )
+
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    // Email
+                    OutlinedTextField(
+                            value = email,
+                            onValueChange = { email = it },
+                            label = { Text("Email") },
+                            singleLine = true,
+                            modifier = Modifier.fillMaxWidth()
+                    )
+
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    // Password
+                    OutlinedTextField(
+                            value = password,
+                            onValueChange = { password = it },
+                            label = { Text("Contraseña") },
+                            singleLine = true,
+                            modifier = Modifier.fillMaxWidth()
+                    )
+
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    // Role Dropdown
+                    ExposedDropdownMenuBox(
+                            expanded = expanded,
+                            onExpandedChange = { expanded = !expanded }
                     ) {
-                        roles.forEach { selectedRole ->
-                            DropdownMenuItem(
-                                onClick = {
-                                    role = selectedRole
-                                    expanded = false
-                                },
-                                text = { Text(selectedRole.replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() }) }
-                            )
+                                                OutlinedTextField(
+                                                                value = role,
+                                                                onValueChange = {},
+                                                                readOnly = true,
+                                                                label = { Text("Rol") },
+                                                                trailingIcon = {
+                                                                        ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
+                                                                },
+                                                                colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors(),
+                                                                modifier = Modifier.fillMaxWidth()
+                                                )
+
+                        ExposedDropdownMenu(
+                                expanded = expanded,
+                                onDismissRequest = { expanded = false }
+                        ) {
+                            roles.forEach { selectedRole ->
+                                DropdownMenuItem(
+                                        onClick = {
+                                            role = selectedRole
+                                            expanded = false
+                                        },
+                                        text = {
+                                            Text(
+                                                    selectedRole.replaceFirstChar {
+                                                        if (it.isLowerCase()) it.titlecase()
+                                                        else it.toString()
+                                                    }
+                                            )
+                                        }
+                                )
+                            }
                         }
                     }
                 }
-            }
-        },
-        confirmButton = {
-            TextButton(
-                onClick = {
-                    val updatedUser = user.copy(
-                        run = run,
-                        firstName = firstName,
-                        lastName = lastName,
-                        direccion = direccion,
-                        email = email,
-                        password = password,
-                        role = role
-                    )
-                    onConfirm(updatedUser)
-                },
-                enabled = isFormValid
-            ) {
-                Text("Guardar")
-            }
-        },
-        dismissButton = {
-            TextButton(onClick = onDismiss) {
-                Text("Cancelar")
-            }
-        }
+            },
+            confirmButton = {
+                TextButton(
+                        onClick = {
+                            val updatedUser =
+                                    user.copy(
+                                            run = run,
+                                            firstName = firstName,
+                                            lastName = lastName,
+                                            direccion = direccion,
+                                            email = email,
+                                            password = password,
+                                            role = role
+                                    )
+                            onConfirm(updatedUser)
+                        },
+                        enabled = isFormValid
+                ) { Text("Guardar") }
+            },
+            dismissButton = { TextButton(onClick = onDismiss) { Text("Cancelar") } }
     )
 }

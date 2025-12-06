@@ -1,5 +1,6 @@
 package com.example.levelup.ui.theme.profile
-
+import androidx.compose.ui.graphics.SolidColor
+import com.example.levelup.ui.theme.*
 import android.content.Context
 import android.os.Build
 import android.os.VibrationEffect
@@ -126,7 +127,7 @@ fun ProfileScreen(
                     contentColor = androidx.compose.ui.graphics.Color.Red
                 ),
                 border = ButtonDefaults.outlinedButtonBorder(enabled = true).copy(
-                    brush = androidx.compose.ui.graphics.SolidColor(androidx.compose.ui.graphics.Color.Red)
+                    brush = SolidColor(Green80)
                 )
             ) {
                 Text("Cerrar Sesión", style = MaterialTheme.typography.titleLarge)

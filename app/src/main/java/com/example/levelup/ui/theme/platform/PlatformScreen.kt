@@ -1,5 +1,7 @@
 package com.example.levelup.ui.theme.platform
 
+import androidx.compose.ui.graphics.SolidColor
+import com.example.levelup.ui.theme.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.lazy.LazyColumn
@@ -54,9 +56,9 @@ fun PlatformScreen(
             OutlinedButton(
                 onClick = { showDialog = true },
                 modifier = Modifier.fillMaxWidth(),
-                colors = ButtonDefaults.outlinedButtonColors(contentColor = DarkGreen),
-                border = ButtonDefaults.outlinedButtonBorder.copy(
-                    brush = androidx.compose.ui.graphics.SolidColor(androidx.compose.ui.graphics.Color.Green)
+                colors = ButtonDefaults.outlinedButtonColors(contentColor = Pink80),
+                border = ButtonDefaults.outlinedButtonBorder(enabled = true).copy(
+                    brush = SolidColor(Green80)
                 )
             ) {
                 Text("Agregar nuevo", style = MaterialTheme.typography.titleMedium)

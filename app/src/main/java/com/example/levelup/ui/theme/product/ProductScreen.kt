@@ -4,7 +4,10 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.*
+import com.example.levelup.ui.theme.*
 import androidx.compose.runtime.*
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.ui.Alignment
@@ -51,9 +54,9 @@ fun ProductScreen(
             OutlinedButton(
                 onClick = { showDialog = true },
                 modifier = Modifier.fillMaxWidth(),
-                colors = ButtonDefaults.outlinedButtonColors(contentColor = DarkGreen),
-                border = ButtonDefaults.outlinedButtonBorder.copy(
-                    brush = androidx.compose.ui.graphics.SolidColor(Color.Green)
+                colors = ButtonDefaults.outlinedButtonColors(contentColor = Pink80),
+                border = ButtonDefaults.outlinedButtonBorder(enabled = true).copy(
+                    brush = SolidColor(Green80)
                 )
             ) {
                 Text("Agregar nuevo producto", style = MaterialTheme.typography.titleMedium)

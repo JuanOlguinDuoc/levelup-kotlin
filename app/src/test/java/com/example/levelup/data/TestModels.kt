@@ -426,4 +426,94 @@ class TestModels {
         assertTrue(loadingTrue.isLoading)
         assertTrue(!loadingFalse.isLoading)
     }
+    
+    // ===== CARTPRODUCT TESTS - 100% COBERTURA =====
+    
+    @Test
+    fun `CartProduct constructor completo`() {
+        val cartProduct = CartProduct(productId = 5L, quantity = 3)
+        assertEquals(5L, cartProduct.productId)
+        assertEquals(3, cartProduct.quantity)
+    }
+    
+    @Test
+    fun `CartProduct serialización JSON`() {
+        val cartProduct = CartProduct(10L, 2)
+        val json = Json.encodeToString(cartProduct)
+        val deserialized = Json.decodeFromString<CartProduct>(json)
+        
+        assertEquals(cartProduct.productId, deserialized.productId)
+        assertEquals(cartProduct.quantity, deserialized.quantity)
+        assertTrue(json.contains("\"productId\":10"))
+        assertTrue(json.contains("\"quantity\":2"))
+    }
+    
+    // ===== CARRITO TESTS - 100% COBERTURA =====
+    
+    @Test
+    fun `Carrito constructor completo`() {
+        val products = listOf(
+            CartProduct(1L, 2),
+            CartProduct(2L, 5)
+        )
+        val carrito = Carrito(
+            id = 10L,
+            userId = 100L,
+            date = "2024-12-06",
+            products = products
+        )
+        
+        assertEquals(10L, carrito.id)
+        assertEquals(100L, carrito.userId)
+        assertEquals("2024-12-06", carrito.date)
+        assertEquals(2, carrito.products.size)
+        assertEquals(1L, carrito.products[0].productId)
+        assertEquals(2, carrito.products[0].quantity)
+    }
+    
+    @Test
+    fun `Carrito con valores por defecto`() {
+        val carrito = Carrito(userId = 50L, date = "2024-01-01")
+        
+        assertEquals(null, carrito.id)
+        assertEquals(50L, carrito.userId)
+        assertEquals("2024-01-01", carrito.date)
+        assertTrue(carrito.products.isEmpty())
+    }
+    
+    @Test
+    fun `Carrito con id null y products vacío`() {
+        val carrito = Carrito(userId = 1L, date = "2024-12-01", products = emptyList())
+        assertEquals(null, carrito.id)
+        assertEquals(0, carrito.products.size)
+    }
+    
+    @Test
+    fun `Carrito serialización JSON`() {
+        val carrito = Carrito(
+            id = 5L,
+            userId = 20L,
+            date = "2024-12-06",
+            products = listOf(CartProduct(3L, 1))
+        )
+        val json = Json.encodeToString(carrito)
+        val deserialized = Json.decodeFromString<Carrito>(json)
+        
+        assertEquals(carrito.id, deserialized.id)
+        assertEquals(carrito.userId, deserialized.userId)
+        assertEquals(carrito.date, deserialized.date)
+        assertEquals(1, deserialized.products.size)
+        assertTrue(json.contains("\"userId\":20"))
+        assertTrue(json.contains("\"date\":\"2024-12-06\""))
+    }
+    
+    @Test
+    fun `Carrito serialización con id null`() {
+        val carrito = Carrito(userId = 99L, date = "2025-01-01")
+        val json = Json.encodeToString(carrito)
+        val deserialized = Json.decodeFromString<Carrito>(json)
+        
+        assertEquals(null, deserialized.id)
+        assertEquals(99L, deserialized.userId)
+    }
 }

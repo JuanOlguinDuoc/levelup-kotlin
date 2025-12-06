@@ -27,21 +27,27 @@ import androidx.compose.material.icons.filled.Lock
 import androidx.compose.ui.text.input.VisualTransformation
 import com.example.levelup.model.ApiResult
 import com.example.levelup.repository.LevelUpRepository
-import com.example.levelup.ui.theme.Green80
+import com.example.levelup.ui.theme.*
 import com.example.levelup.ui.theme.Purple80
 import com.example.levelup.ui.theme.Pink80
 import com.example.levelup.ui.theme.Purple40
 import com.example.levelup.R
 import kotlinx.coroutines.launch
+import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.graphics.painter.ColorPainter
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LoginScreen(
     onLoginSuccess: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    // Test hooks: provide a painter to avoid resource loading in unit tests,
+    // or provide a fake repository implementation.
+    testLogoPainter: Painter? = null,
+    testRepository: LevelUpRepository? = null
 ) {
     val context = LocalContext.current
-    val repository = remember { LevelUpRepository(context) }
+    val repository = testRepository ?: remember { LevelUpRepository(context) }
     val scope = rememberCoroutineScope()
 
     var email by remember { mutableStateOf("") }
@@ -62,8 +68,10 @@ fun LoginScreen(
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+            // Use injected painter in tests to avoid accessing Android resources.
+            val logoPainter = testLogoPainter ?: painterResource(id = R.drawable.logo)
             Image(
-                painter = painterResource(id = R.drawable.logo),
+                painter = logoPainter,
                 contentDescription = "Level UP Logo",
                 contentScale = ContentScale.Fit
             )

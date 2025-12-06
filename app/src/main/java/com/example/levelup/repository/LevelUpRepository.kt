@@ -2,19 +2,21 @@ package com.example.levelup.repository
 
 import android.content.Context
 import com.example.levelup.api.ApiClient
+import com.example.levelup.api.ApiService
 import com.example.levelup.auth.AuthManager
 import com.example.levelup.datastore.DataStoreManager
 import com.example.levelup.model.*
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOf
 import retrofit2.Response
 
-class LevelUpRepository(context: Context) {
+class LevelUpRepository(context: Context? = null, private val apiService: ApiService = ApiClient.apiService) {
+    private val dataStoreManager: DataStoreManager? = context?.let { DataStoreManager(it) }
+    private val authManager: AuthManager? = context?.let { AuthManager(it) }
     
-    private val apiService = ApiClient.apiService
-    private val dataStoreManager = DataStoreManager(context)
-    private val authManager = AuthManager(context)
+    // helper utilities available through imports
     
     // Helper function to handle API calls
     private suspend fun <T> apiCall(call: suspend () -> Response<T>): ApiResult<T> {
@@ -35,7 +37,7 @@ class LevelUpRepository(context: Context) {
     }
     
     private suspend fun getAuthToken(): String? {
-        return authManager.getToken().first()
+        return authManager?.getToken()?.first()
     }
     
     // Auth methods
@@ -47,8 +49,8 @@ class LevelUpRepository(context: Context) {
         if (result is ApiResult.Success) {
             // Verificar que el token no sea nulo (credenciales válidas)
             if (result.data.token != null && result.data.email != null) {
-                authManager.saveToken(result.data.token)
-                authManager.saveUserEmail(result.data.email)
+                authManager?.saveToken(result.data.token)
+                authManager?.saveUserEmail(result.data.email)
                 return result
             } else {
                 // El backend respondió 200 pero con credenciales inválidas
@@ -64,7 +66,7 @@ class LevelUpRepository(context: Context) {
     }
     
     suspend fun logout() {
-        authManager.clearAuth()
+        authManager?.clearAuth()
     }
     
     // Users methods
@@ -77,13 +79,14 @@ class LevelUpRepository(context: Context) {
             return@flow
         }
         
-        val result = apiCall { 
-            apiService.getUsers(authManager.getBearerToken(token)) 
+        val bearer = authManager?.getBearerToken(token) ?: "Bearer $token"
+        val result = apiCall {
+            apiService.getUsers(bearer)
         }
         
         if (result is ApiResult.Success) {
             // Guarda automáticamente en el almacenamiento local
-            dataStoreManager.saveUsers(result.data)
+            dataStoreManager?.saveUsers(result.data)
         }
         
         emit(result)
@@ -91,14 +94,15 @@ class LevelUpRepository(context: Context) {
     
     // Para datos locales (offline)
     fun getUsersFromLocal(): Flow<List<UserModel>> {
-        return dataStoreManager.users
+        return dataStoreManager?.users ?: kotlinx.coroutines.flow.flowOf(emptyList())
     }
     
     suspend fun createUser(user: RegisterRequest): ApiResult<UserCreateResponse> {
         val token = getAuthToken() ?: return ApiResult.Error(Exception("No authentication token"))
         
-        val result = apiCall { 
-            apiService.createUser(authManager.getBearerToken(token), user) 
+        val bearer = authManager?.getBearerToken(token) ?: "Bearer $token"
+        val result = apiCall {
+            apiService.createUser(bearer, user)
         }
         
         if (result is ApiResult.Success) {
@@ -112,8 +116,9 @@ class LevelUpRepository(context: Context) {
     suspend fun updateUser(id: Long, user: UserModel): ApiResult<UserUpdateResponse> {
         val token = getAuthToken() ?: return ApiResult.Error(Exception("No authentication token"))
         
-        val result = apiCall { 
-            apiService.updateUser(authManager.getBearerToken(token), id, user) 
+        val bearer = authManager?.getBearerToken(token) ?: "Bearer $token"
+        val result = apiCall {
+            apiService.updateUser(bearer, id, user)
         }
         
         if (result is ApiResult.Success) {
@@ -127,8 +132,9 @@ class LevelUpRepository(context: Context) {
     suspend fun deleteUser(id: Long): ApiResult<UserDeleteResponse> {
         val token = getAuthToken() ?: return ApiResult.Error(Exception("No authentication token"))
         
-        val result = apiCall { 
-            apiService.deleteUser(authManager.getBearerToken(token), id) 
+        val bearer = authManager?.getBearerToken(token) ?: "Bearer $token"
+        val result = apiCall {
+            apiService.deleteUser(bearer, id)
         }
         
         if (result is ApiResult.Success) {
@@ -149,26 +155,28 @@ class LevelUpRepository(context: Context) {
             return@flow
         }
         
-        val result = apiCall { 
-            apiService.getCategories(authManager.getBearerToken(token)) 
+        val bearer = authManager?.getBearerToken(token) ?: "Bearer $token"
+        val result = apiCall {
+            apiService.getCategories(bearer)
         }
         
         if (result is ApiResult.Success) {
-            dataStoreManager.saveCategories(result.data)
+            dataStoreManager?.saveCategories(result.data)
         }
         
         emit(result)
     }
     
     fun getCategoriesFromLocal(): Flow<List<CategoryModel>> {
-        return dataStoreManager.categories
+        return dataStoreManager?.categories ?: kotlinx.coroutines.flow.flowOf(emptyList())
     }
     
     suspend fun createCategory(category: CategoryModel): ApiResult<CategoryModel> {
         val token = getAuthToken() ?: return ApiResult.Error(Exception("No authentication token"))
         
-        val result = apiCall { 
-            apiService.createCategory(authManager.getBearerToken(token), category) 
+        val bearer = authManager?.getBearerToken(token) ?: "Bearer $token"
+        val result = apiCall {
+            apiService.createCategory(bearer, category)
         }
         
         if (result is ApiResult.Success) {
@@ -181,8 +189,9 @@ class LevelUpRepository(context: Context) {
     suspend fun updateCategory(id: Long, category: CategoryModel): ApiResult<CategoryModel> {
         val token = getAuthToken() ?: return ApiResult.Error(Exception("No authentication token"))
         
-        val result = apiCall { 
-            apiService.updateCategory(authManager.getBearerToken(token), id, category) 
+        val bearer = authManager?.getBearerToken(token) ?: "Bearer $token"
+        val result = apiCall {
+            apiService.updateCategory(bearer, id, category)
         }
         
         if (result is ApiResult.Success) {
@@ -195,8 +204,9 @@ class LevelUpRepository(context: Context) {
     suspend fun deleteCategory(id: Long): ApiResult<Unit> {
         val token = getAuthToken() ?: return ApiResult.Error(Exception("No authentication token"))
         
-        val result = apiCall { 
-            apiService.deleteCategory(authManager.getBearerToken(token), id) 
+        val bearer = authManager?.getBearerToken(token) ?: "Bearer $token"
+        val result = apiCall {
+            apiService.deleteCategory(bearer, id)
         }
         
         if (result is ApiResult.Success) {
@@ -216,26 +226,28 @@ class LevelUpRepository(context: Context) {
             return@flow
         }
         
-        val result = apiCall { 
-            apiService.getPlatforms(authManager.getBearerToken(token)) 
+        val bearer = authManager?.getBearerToken(token) ?: "Bearer $token"
+        val result = apiCall {
+            apiService.getPlatforms(bearer)
         }
         
         if (result is ApiResult.Success) {
-            dataStoreManager.savePlatform(result.data)
+            dataStoreManager?.savePlatform(result.data)
         }
         
         emit(result)
     }
     
     fun getPlatformsFromLocal(): Flow<List<PlatformModel>> {
-        return dataStoreManager.platforms
+        return dataStoreManager?.platforms ?: kotlinx.coroutines.flow.flowOf(emptyList())
     }
     
     suspend fun createPlatform(platform: PlatformModel): ApiResult<PlatformModel> {
         val token = getAuthToken() ?: return ApiResult.Error(Exception("No authentication token"))
         
-        val result = apiCall { 
-            apiService.createPlatform(authManager.getBearerToken(token), platform) 
+        val bearer = authManager?.getBearerToken(token) ?: "Bearer $token"
+        val result = apiCall {
+            apiService.createPlatform(bearer, platform)
         }
         
         if (result is ApiResult.Success) {
@@ -248,8 +260,9 @@ class LevelUpRepository(context: Context) {
     suspend fun updatePlatform(id: Long, platform: PlatformModel): ApiResult<PlatformModel> {
         val token = getAuthToken() ?: return ApiResult.Error(Exception("No authentication token"))
         
-        val result = apiCall { 
-            apiService.updatePlatform(authManager.getBearerToken(token), id, platform) 
+        val bearer = authManager?.getBearerToken(token) ?: "Bearer $token"
+        val result = apiCall {
+            apiService.updatePlatform(bearer, id, platform)
         }
         
         if (result is ApiResult.Success) {
@@ -262,8 +275,9 @@ class LevelUpRepository(context: Context) {
     suspend fun deletePlatform(id: Long): ApiResult<Unit> {
         val token = getAuthToken() ?: return ApiResult.Error(Exception("No authentication token"))
         
-        val result = apiCall { 
-            apiService.deletePlatform(authManager.getBearerToken(token), id) 
+        val bearer = authManager?.getBearerToken(token) ?: "Bearer $token"
+        val result = apiCall {
+            apiService.deletePlatform(bearer, id)
         }
         
         if (result is ApiResult.Success) {
@@ -283,26 +297,28 @@ class LevelUpRepository(context: Context) {
             return@flow
         }
         
-        val result = apiCall { 
-            apiService.getProducts(authManager.getBearerToken(token)) 
+        val bearer = authManager?.getBearerToken(token) ?: "Bearer $token"
+        val result = apiCall {
+            apiService.getProducts(bearer)
         }
         
         if (result is ApiResult.Success) {
-            dataStoreManager.saveProducts(result.data)
+            dataStoreManager?.saveProducts(result.data)
         }
         
         emit(result)
     }
     
     fun getProductsFromLocal(): Flow<List<ProductModel>> {
-        return dataStoreManager.products
+        return dataStoreManager?.products ?: kotlinx.coroutines.flow.flowOf(emptyList())
     }
     
     suspend fun createProduct(product: ProductModel): ApiResult<ProductModel> {
         val token = getAuthToken() ?: return ApiResult.Error(Exception("No authentication token"))
         
-        val result = apiCall { 
-            apiService.createProduct(authManager.getBearerToken(token), product) 
+        val bearer = authManager?.getBearerToken(token) ?: "Bearer $token"
+        val result = apiCall {
+            apiService.createProduct(bearer, product)
         }
         
         if (result is ApiResult.Success) {
@@ -315,8 +331,9 @@ class LevelUpRepository(context: Context) {
     suspend fun updateProduct(id: Long, product: ProductModel): ApiResult<ProductModel> {
         val token = getAuthToken() ?: return ApiResult.Error(Exception("No authentication token"))
         
-        val result = apiCall { 
-            apiService.updateProduct(authManager.getBearerToken(token), id, product) 
+        val bearer = authManager?.getBearerToken(token) ?: "Bearer $token"
+        val result = apiCall {
+            apiService.updateProduct(bearer, id, product)
         }
         
         if (result is ApiResult.Success) {
@@ -329,8 +346,9 @@ class LevelUpRepository(context: Context) {
     suspend fun deleteProduct(id: Long): ApiResult<Unit> {
         val token = getAuthToken() ?: return ApiResult.Error(Exception("No authentication token"))
         
-        val result = apiCall { 
-            apiService.deleteProduct(authManager.getBearerToken(token), id) 
+        val bearer = authManager?.getBearerToken(token) ?: "Bearer $token"
+        val result = apiCall {
+            apiService.deleteProduct(bearer, id)
         }
         
         if (result is ApiResult.Success) {
@@ -340,7 +358,7 @@ class LevelUpRepository(context: Context) {
         return result
     }
 
-    // Carts methods (fakestoreapi.com)
+    // --- Carts methods (fakestoreapi.com) ---
     suspend fun getAllCarts(): ApiResult<List<com.example.levelup.model.Carrito>> {
         val result = apiCall { apiService.getAllCarts() }
         return result
