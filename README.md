@@ -402,4 +402,4 @@ Proyecto académico desarrollado para Duoc UC - 2025
 
 ---
 
-**Desarrollado con ❤️ por el equipo Level Up**
+**Desarrollado con <3 por el equipo (yo solito :c) Level Up**
