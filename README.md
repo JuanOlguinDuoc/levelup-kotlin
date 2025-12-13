@@ -325,6 +325,198 @@ levelup-kotlin/
 │       └── app-release.apk    # APK incluido en el proyecto
 ```
 
+## Arquitectura del Sistema
+
+### 🏗️ Diagrama de Arquitectura - App Móvil
+
+La aplicación móvil sigue el patrón MVVM (Model-View-ViewModel) con Repository Pattern para una arquitectura limpia y escalable:
+
+![Diagrama App Móvil](image-1.png)
+
+### 📐 Patrones Arquitectónicos
+
+#### App Móvil - MVVM + Repository Pattern
+```
+┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
+│   UI (Compose)  │ ←→ │   ViewModel     │ ←→ │   Repository    │
+│                 │    │                 │    │                 │
+│ - Screens       │    │ - UI State      │    │ - Data Sources  │
+│ - Components    │    │ - Business Logic│    │ - API Calls     │
+│ - Navigation    │    │ - Events        │    │ - Local Storage │
+└─────────────────┘    └─────────────────┘    └─────────────────┘
+                                                       │
+                                               ┌─────────────────┐
+                                               │   Data Layer    │
+                                               │                 │
+                                               │ - Models        │
+                                               │ - DataStore     │
+                                               │ - Retrofit API  │
+                                               └─────────────────┘
+```
+
+#### Backend - Arquitectura en Capas (Spring Boot)
+```
+┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
+│   Controller    │ ←→ │    Service      │ ←→ │   Repository    │
+│                 │    │                 │    │                 │
+│ - REST API      │    │ - Business Logic│    │ - Data Access   │
+│ - Validation    │    │ - Transactions  │    │ - JPA Queries   │
+│ - Error Handling│    │ - Security      │    │ - Entity Mapping│
+└─────────────────┘    └─────────────────┘    └─────────────────┘
+                                                       │
+                                               ┌─────────────────┐
+                                               │   Database      │
+                                               │                 │
+                                               │ - PostgreSQL    │
+                                               │ - AWS RDS       │
+                                               │ - Entity Models │
+                                               └─────────────────┘
+```
+
+## Gestión de Proyecto en GitHub
+
+### 🌿 Estrategia de Branching - Git Flow
+
+El proyecto utiliza una estrategia de Git Flow adaptada para desarrollo de características y releases:
+
+![Git Flow Branches](https://github.com/JuanOlguinDuoc/levelup-kotlin/commits)
+
+#### Tipos de Ramas
+
+- **`master`** 🚀 - Rama principal de producción
+  - Contiene código estable y testeado
+  - Cada commit representa una versión deployable
+  - Protegida con revisión de código
+
+- **`develop`** 🔄 - Rama de desarrollo
+  - Integración de características completadas
+  - Base para nuevas features
+  - Testing de integración
+
+- **`feature/*`** ✨ - Ramas de características
+  - `feature/test2` - Implementación de tests y documentación
+  - `feature/auth` - Sistema de autenticación
+  - `feature/ui` - Interfaz de usuario
+  - Se crean desde `develop` y se fusionan de vuelta
+
+- **`hotfix/*`** 🔥 - Corrección de errores críticos
+  - Correcciones urgentes en producción
+  - Se crean desde `master`
+  - Se fusionan a `master` y `develop`
+
+- **`release/*`** 📦 - Preparación de releases
+  - Estabilización antes del lanzamiento
+  - Corrección de bugs menores
+  - Actualización de versiones
+
+### 📊 Historial de Commits
+
+#### Rama `master` (Producción)
+```bash
+6f2023e6 - fix 2                           (last week)
+4f5684f7 - fix                             (last week)  
+e6ca96b  - add workflows                    (last week)
+73bae7f  - Merge branch 'feat-test'        (last month)
+feddeee  - Merge pull request #50          (last month)
+1a44cc5  - avance                          (last month)
+```
+
+#### Rama `develop` (Desarrollo)
+```bash
+1a44cc5  - avance                          (last month)
+73bae7f  - Merge branch 'feat-test'        (last month)
+c063c06  - update checkout repo actions    (Nov 8)
+630c173  - update actions                  (Nov 8)
+fecee60  - actualizacion de actions        (Nov 8)
+36fcd96  - add actions                     (Nov 8)
+```
+
+#### Rama `feature/test2` (Características)
+```bash
+f1ebfbd  - update                          (1 minute ago)
+b805384  - add readme                      (3 minutes ago)
+a565357  - add nuevos test y docuemntacion (last week)
+285e65f  - agregar peticiones a Fake Store Api (last week)
+2811ed4  - eliminacion de archivos         (last week)
+c6c271e  - add test para modelos           (last week)
+```
+
+### 🔄 Workflow de Desarrollo
+
+#### 1. Creación de Feature Branch
+```bash
+# Desde develop
+git checkout develop
+git pull origin develop
+git checkout -b feature/nueva-caracteristica
+```
+
+#### 2. Desarrollo y Commits
+```bash
+# Commits descriptivos y frecuentes
+git add .
+git commit -m "add: implementación de autenticación JWT"
+git commit -m "fix: corrección en validación de formularios"
+git commit -m "test: agregar tests unitarios para AuthService"
+```
+
+#### 3. Pull Request y Code Review
+```bash
+# Push de la rama feature
+git push origin feature/nueva-caracteristica
+
+# Crear PR en GitHub:
+# feature/nueva-caracteristica → develop
+```
+
+#### 4. Merge y Cleanup
+```bash
+# Después del merge, limpiar rama local
+git checkout develop
+git pull origin develop
+git branch -d feature/nueva-caracteristica
+```
+
+### 📈 Estadísticas de Commits por Tipo
+
+#### Análisis de Commits Recientes:
+- **Features** (40%): `add nuevos test`, `agregar peticiones a Fake Store Api`
+- **Fixes** (25%): `fix 2`, `eliminacion de archivos`
+- **Updates** (20%): `update checkout repo actions`, `actualizacion de actions`
+- **Merges** (15%): `Merge branch`, `Merge pull request`
+
+### 🛡️ Protección de Ramas
+
+#### Reglas de Protección en `master`:
+- ✅ Require pull request reviews before merging
+- ✅ Require status checks to pass before merging
+- ✅ Require branches to be up to date before merging
+- ✅ Include administrators in restrictions
+
+### 🔍 Convenciones de Commits
+
+El proyecto sigue convenciones semánticas para commits:
+
+```bash
+# Tipos de commits
+feat:     Nueva característica
+fix:      Corrección de bug
+docs:     Documentación
+style:    Formato, puntos y comas faltantes, etc.
+refactor: Refactorización de código
+test:     Agregar tests
+chore:    Mantenimiento
+```
+
+#### Ejemplos de Buenos Commits:
+```bash
+feat(auth): implement JWT token validation
+fix(ui): resolve navigation bug in profile screen
+docs(readme): add installation instructions
+test(models): add unit tests for user model
+refactor(api): optimize repository pattern implementation
+```
+
 ## Estructura del Código
 
 ### 📱 App Móvil (`levelup-kotlin/`)
@@ -402,4 +594,18 @@ Proyecto académico desarrollado para Duoc UC - 2025
 
 ---
 
-**Desarrollado con <3 por el equipo (yo solito :c) Level Up**
+**Desarrollado con ❤️ por Juan Olguin - Duoc UC 2025**
+
+### 📸 Capturas del Historial de GitHub
+
+#### Vista de Commits por Rama:
+
+![Commits Branch develop](https://raw.githubusercontent.com/JuanOlguinDuoc/levelup-kotlin/feature/test2/docs/commits-develop.png)
+
+![Commits Branch master](https://raw.githubusercontent.com/JuanOlguinDuoc/levelup-kotlin/feature/test2/docs/commits-master.png)
+
+![Commits Branch feature/test2](https://raw.githubusercontent.com/JuanOlguinDuoc/levelup-kotlin/feature/test2/docs/commits-feature.png)
+
+#### Git Flow Diagram:
+
+![Git Workflow Diagram](https://raw.githubusercontent.com/JuanOlguinDuoc/levelup-kotlin/feature/test2/docs/git-workflow.png)
